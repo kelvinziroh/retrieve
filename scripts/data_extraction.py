@@ -20,8 +20,14 @@ def extract_file_paths(base_dir):
     return file_paths
 
 
-def extract_metadata(file_paths):
-    ...
+def extract_metadata(file_path):
+    # Split each file path
+    meta_keys = ["unit", "module", "sub_module"]
+    meta_data = {}
+    for idx, value in enumerate(file_path.split("/")[2:-1]):
+        meta_data[meta_keys[idx]] = value.replace("_", " ")
+    
+    return meta_data
     
 
 def extract_text(file_path):
@@ -64,7 +70,7 @@ def match_question_patterns():
     return PATTERN
 
 
-def extract_question_data(text):
+def extract_question_data(text, meta_data):
     # Split the text into sections
     SECTIONS = split_text_sections(text)
 
@@ -73,12 +79,23 @@ def extract_question_data(text):
 
     # Set question types
     QUESTION_TYPES = ["mcq", "saq", "oeq"]
-
+    
+    # Get the meta data
+    M_DATA = meta_data
+    module_exists = "module" in M_DATA.keys()
+    sub_module_exists = "sub_module" in M_DATA.keys()
+    
     # Capture question data
     question_data = []
     for idx, section in enumerate(SECTIONS):
+        # Capture quiz metadata
+        unit = M_DATA["unit"]
+        module = M_DATA["module"] if module_exists else "Null"
+        sub_module = M_DATA["sub_module"] if sub_module_exists else "Null"
+        
         # Capture question type
         question_type = QUESTION_TYPES[idx]
+        
         for match in QUESTION_PATTERN.finditer(section):
             # Capture question pattern
             question = (
@@ -102,11 +119,21 @@ def extract_question_data(text):
             # Update the question data list appropriately
             if len(choices) == 0:
                 question_data.append(
-                    {"type": question_type, "question": question, "answer": answer}
+                    {
+                        "unit": unit,
+                        "module": module,
+                        "sub_module": sub_module,
+                        "type": question_type, 
+                        "question": question, 
+                        "answer": answer
+                    }
                 )
             else:
                 question_data.append(
                     {
+                        "unit": unit,
+                        "module": module,
+                        "sub_module": sub_module,
                         "type": question_type,
                         "question": question,
                         "choices": choices,
@@ -150,33 +177,30 @@ def main():
     # Define the base directory
     base_dir = local_parameters["base_directory"]
     
-    for item in extract_file_paths(base_dir):
-        print(item)
+    print("Questions:")
+    # Iterate through all the file paths
+    for path in extract_file_paths(base_dir):
+        # extract metadata
+        m_data = extract_metadata(path)
+        # extract text
+        text = extract_text(path)
+        # extract question data from text
+        data = extract_question_data(text, m_data)
     
-    # Extract question data from the file
-    # extracted_text = extract_text(
-    #     "../question_bank/machine_learning/regression/simple_linear_regression/simple_linear_regression.pdf"
-    # )
 
-    # extracted_text = extract_text(
-    #     "../question_bank/generative_ai/intro_to_gen_ai/intro_to_gen_ai.pdf"
-    # )
+        print_summary(text, data)
 
-    # data = extract_question_data(extracted_text)
-    # print_summary(extracted_text, data)
-
-    # Display the data
-    # print("Questions:")
-    # for item in data:
-    #     for key, value in item.items():
-    #         if key == "choices":
-    #             print(f"{key}:")
-    #             for i in value:
-    #                 print(f"\t{i}")
-    #         else:
-    #             print(f"{key}: {value}")
-    #         # print(f"{key}: {value}")
-    #     print("\n")
+        # Display the data
+        # for item in data:
+        #     for key, value in item.items():
+        #         if key == "choices":
+        #             print(f"{key}:")
+        #             for i in value:
+        #                 print(f"\t{i}")
+        #         else:
+        #             print(f"{key}: {value}")
+        #         # print(f"{key}: {value}")
+        #     print("\n")
 
 
 if __name__ == "__main__":
