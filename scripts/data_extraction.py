@@ -4,11 +4,24 @@ import pymupdf
 import re
 from parameters import local_parameters
 
-def extract_metadata(base_dir):
+
+def extract_file_paths(base_dir):
     # Recursively traverse the base directory
-    traversal = os.walk(base_dir)
+    traversal = list(os.walk(base_dir))
     
-    return list(traversal)
+    # Extract the file paths
+    file_paths = []
+    for item in traversal:
+        if len(item[2]) > 0:
+            for _ in item[2]:
+                # Get the file paths
+                file_paths.append(f"{item[0]}/{_}")
+    
+    return file_paths
+
+
+def extract_metadata(file_paths):
+    ...
     
 
 def extract_text(file_path):
@@ -137,8 +150,7 @@ def main():
     # Define the base directory
     base_dir = local_parameters["base_directory"]
     
-    # Extract metadata
-    for item in extract_metadata(base_dir):
+    for item in extract_file_paths(base_dir):
         print(item)
     
     # Extract question data from the file
