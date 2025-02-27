@@ -2,11 +2,13 @@
 import os
 import pymupdf
 import re
-
+from parameters import local_parameters
 
 def extract_metadata(base_dir):
+    # Recursively traverse the base directory
+    traversal = os.walk(base_dir)
     
-    return os.path.exists(base_dir)
+    return list(traversal)
     
 
 def extract_text(file_path):
@@ -132,8 +134,13 @@ def print_summary(text, data):
 
 
 def main():
-    # Define the base directory to traverse
+    # Define the base directory
+    base_dir = local_parameters["base_directory"]
+    
     # Extract metadata
+    for item in extract_metadata(base_dir):
+        print(item)
+    
     # Extract question data from the file
     # extracted_text = extract_text(
     #     "../question_bank/machine_learning/regression/simple_linear_regression/simple_linear_regression.pdf"
