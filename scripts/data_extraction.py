@@ -1,7 +1,13 @@
 # Importing required modules
+import os
 import pymupdf
 import re
 
+
+def extract_metadata(base_dir):
+    
+    return os.path.exists(base_dir)
+    
 
 def extract_text(file_path):
     # Open and read the file
@@ -126,17 +132,19 @@ def print_summary(text, data):
 
 
 def main():
+    # Define the base directory to traverse
+    # Extract metadata
     # Extract question data from the file
     # extracted_text = extract_text(
-    #     "../question_bank/machine_learning/regression/simple_linear_regression/Simple Linear Regression.pdf"
+    #     "../question_bank/machine_learning/regression/simple_linear_regression/simple_linear_regression.pdf"
     # )
 
-    extracted_text = extract_text(
-        "../question_bank/machine_learning/unsupervised_learning/clustering_and_geospatial_analysis/Gaussian Mixture Models.pdf"
-    )
+    # extracted_text = extract_text(
+    #     "../question_bank/generative_ai/intro_to_gen_ai/intro_to_gen_ai.pdf"
+    # )
 
-    data = extract_question_data(extracted_text)
-    print_summary(extracted_text, data)
+    # data = extract_question_data(extracted_text)
+    # print_summary(extracted_text, data)
 
     # Display the data
     # print("Questions:")
